@@ -6,13 +6,14 @@ import tempfile
 import unittest
 from decimal import Decimal
 from pathlib import Path
+from unittest.mock import patch
 
 from india_deals_bot.app import select_deals
 from india_deals_bot.config import load_env_file
 from india_deals_bot.models import Deal, decimal_value
 from india_deals_bot.sources import _first
 from india_deals_bot.state import DealState
-from india_deals_bot.telegram import format_deal
+from india_deals_bot.telegram import TelegramClient, format_deal
 
 
 class DealTests(unittest.TestCase):
@@ -149,6 +150,25 @@ class DealTests(unittest.TestCase):
             finally:
                 os.environ.pop("NEW_TEST_VALUE", None)
                 os.environ.pop("EXISTING_TEST_VALUE", None)
+
+    @patch("india_deals_bot.telegram.request_json")
+    def test_sends_image_deal_with_inline_button(self, request_json_mock) -> None:
+        request_json_mock.return_value = {"ok": True}
+        deal = Deal(
+            "Amazon India",
+            "image",
+            "Headphones",
+            "https://example.com/deal",
+            Decimal("999"),
+            Decimal("1999"),
+            image_url="https://example.com/image.jpg",
+        )
+        TelegramClient("token", "-1001").send_deal(deal)
+        args, kwargs = request_json_mock.call_args
+        self.assertTrue(args[0].endswith("/sendPhoto"))
+        self.assertEqual(kwargs["data"]["photo"], deal.image_url)
+        button = kwargs["data"]["reply_markup"]["inline_keyboard"][0][0]
+        self.assertEqual(button["url"], deal.url)
 
 
 if __name__ == "__main__":

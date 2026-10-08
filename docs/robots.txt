@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vinay4125.github.io/india-deals-telegram-bot/sitemap.xml

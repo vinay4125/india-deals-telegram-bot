@@ -48,7 +48,15 @@ jobs:
           DEAL_KEYWORDS: ${{ vars.DEAL_KEYWORDS || 'electronics,mobiles,laptops,appliances,fashion' }}
           MIN_DISCOUNT_PERCENT: ${{ vars.MIN_DISCOUNT_PERCENT || '30' }}
           MAX_DEALS_PER_RUN: ${{ vars.MAX_DEALS_PER_RUN || '10' }}
-        run: india-deals-bot
+        shell: bash
+        run: |
+          if [[ -z "$JSON_FEED_URLS" ]] &&
+             [[ -z "$AMAZON_CREATORS_CLIENT_ID" || -z "$AMAZON_CREATORS_CLIENT_SECRET" || -z "$AMAZON_ASSOCIATE_TAG" ]] &&
+             [[ -z "$FLIPKART_AFFILIATE_ID" || -z "$FLIPKART_AFFILIATE_TOKEN" ]]; then
+            echo "No complete deal source is configured yet; skipping this run."
+            exit 0
+          fi
+          india-deals-bot
 
       - name: Save notification state
         if: success()

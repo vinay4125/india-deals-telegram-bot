@@ -66,6 +66,7 @@ class Settings:
     telegram_bot_token: str
     telegram_chat_id: str
     min_discount_percent: Decimal
+    flash_deal_max_price: Decimal
     max_deals_per_run: int
     state_file: Path
     state_retention_days: int
@@ -95,6 +96,7 @@ class Settings:
             telegram_bot_token=token,
             telegram_chat_id=chat_id,
             min_discount_percent=_decimal("MIN_DISCOUNT_PERCENT", "30"),
+            flash_deal_max_price=_decimal("FLASH_DEAL_MAX_PRICE", "10"),
             max_deals_per_run=_integer("MAX_DEALS_PER_RUN", 10),
             state_file=Path(os.getenv("STATE_FILE", ".deals-state.json")),
             state_retention_days=_integer("STATE_RETENTION_DAYS", 14),

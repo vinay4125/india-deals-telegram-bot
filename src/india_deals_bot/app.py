@@ -64,6 +64,7 @@ def select_deals(
     keywords: tuple[str, ...],
     state: DealState,
     limit: int,
+    flash_deal_max_price: Decimal = Decimal("10"),
 ) -> list[Deal]:
     unique: dict[str, Deal] = {}
     for deal in deals:
@@ -79,7 +80,11 @@ def select_deals(
             unique[deal.key] = deal
     return sorted(
         unique.values(),
-        key=lambda deal: (deal.discount_percent, deal.list_price - deal.sale_price),
+        key=lambda deal: (
+            deal.sale_price <= flash_deal_max_price,
+            deal.discount_percent,
+            deal.list_price - deal.sale_price,
+        ),
         reverse=True,
     )[:limit]
 
@@ -109,6 +114,7 @@ def run(settings: Settings) -> int:
         keywords=settings.deal_keywords,
         state=state,
         limit=settings.max_deals_per_run,
+        flash_deal_max_price=settings.flash_deal_max_price,
     )
     if settings.dry_run:
         for deal in selected:

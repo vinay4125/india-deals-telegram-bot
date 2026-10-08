@@ -40,6 +40,7 @@ def _deal(
     sale_price_paths: tuple[str, ...],
     list_price_paths: tuple[str, ...],
     image_paths: tuple[str, ...] = (),
+    availability_note_paths: tuple[str, ...] = (),
 ) -> Deal | None:
     product_id = str(_first(item, *product_id_paths) or "").strip()
     title = str(_first(item, *title_paths) or "").strip()
@@ -47,13 +48,25 @@ def _deal(
     sale_price = decimal_value(_first(item, *sale_price_paths))
     list_price = decimal_value(_first(item, *list_price_paths))
     image_url = str(_first(item, *image_paths) or "").strip() or None
+    availability_note = (
+        str(_first(item, *availability_note_paths) or "").strip() or None
+    )
     if not product_id:
         product_id = url
     if not title or not product_id or not url or sale_price is None or list_price is None:
         return None
     if not url.lower().startswith("https://"):
         return None
-    return Deal(merchant, product_id, title, url, sale_price, list_price, image_url)
+    return Deal(
+        merchant,
+        product_id,
+        title,
+        url,
+        sale_price,
+        list_price,
+        image_url,
+        availability_note,
+    )
 
 
 @dataclass(slots=True)
@@ -80,6 +93,11 @@ class JsonFeedSource:
                     sale_price_paths=("sale_price", "price"),
                     list_price_paths=("list_price", "mrp"),
                     image_paths=("image_url",),
+                    availability_note_paths=(
+                        "availability_note",
+                        "location_note",
+                        "pincode_note",
+                    ),
                 )
                 if deal:
                     deals.append(deal)

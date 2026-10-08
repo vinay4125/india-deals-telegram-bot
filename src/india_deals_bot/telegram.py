@@ -7,14 +7,19 @@ from .models import Deal
 
 
 def format_deal(deal: Deal) -> str:
+    flash_label = "⚡ <b>₹1 / FLASH DEAL</b>\n" if deal.sale_price <= 10 else ""
+    availability = (
+        f"\n📍 {escape(deal.availability_note)}\n" if deal.availability_note else ""
+    )
     return (
-        f"🔥 <b>{escape(deal.title)}</b>\n\n"
+        f"{flash_label}🔥 <b>{escape(deal.title)}</b>\n\n"
         f"🏪 {escape(deal.merchant)}\n"
         f"💰 <b>₹{deal.sale_price:,.0f}</b> "
         f"<s>₹{deal.list_price:,.0f}</s>\n"
-        f"🏷️ <b>{deal.discount_percent}% OFF</b>\n\n"
+        f"🏷️ <b>{deal.discount_percent}% OFF</b>\n"
+        f"{availability}\n"
         f'<a href="{escape(deal.url, quote=True)}">View deal</a>\n'
-        "⚠️ Price and availability can change."
+        "⚠️ Price, stock and eligibility can vary by pincode and account."
     )
 
 

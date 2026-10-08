@@ -27,6 +27,7 @@ class Deal:
     sale_price: Decimal
     list_price: Decimal
     image_url: str | None = None
+    availability_note: str | None = None
 
     @property
     def discount_percent(self) -> Decimal:

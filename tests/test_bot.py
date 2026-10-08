@@ -103,6 +103,39 @@ class DealTests(unittest.TestCase):
         payload = {"offers": {"listings": [{"price": {"amount": 499}}]}}
         self.assertEqual(_first(payload, "offers.listings.0.price.amount"), 499)
 
+    def test_flash_deals_rank_before_larger_discounts(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            state = DealState(Path(directory) / "state.json", 14)
+            regular = Deal(
+                "Store",
+                "regular",
+                "Regular deal",
+                "https://example.com/regular",
+                Decimal("100"),
+                Decimal("1000"),
+            )
+            flash = Deal(
+                "Blinkit",
+                "flash",
+                "One rupee deal",
+                "https://example.com/flash",
+                Decimal("1"),
+                Decimal("10"),
+                availability_note="Selected pincodes only",
+            )
+            selected = select_deals(
+                [regular, flash],
+                minimum_discount=Decimal("30"),
+                keywords=(),
+                state=state,
+                limit=10,
+                flash_deal_max_price=Decimal("10"),
+            )
+            self.assertEqual([deal.product_id for deal in selected], ["flash", "regular"])
+            message = format_deal(flash)
+            self.assertIn("₹1 / FLASH DEAL", message)
+            self.assertIn("Selected pincodes only", message)
+
     def test_loads_env_without_overriding_existing_values(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / ".env"

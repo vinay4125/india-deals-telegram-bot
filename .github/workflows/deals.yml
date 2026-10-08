@@ -2,7 +2,7 @@ name: Post India deals
 
 on:
   schedule:
-    - cron: "17 */2 * * *"
+    - cron: "17,47 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -45,8 +45,9 @@ jobs:
           FLIPKART_AFFILIATE_ID: ${{ secrets.FLIPKART_AFFILIATE_ID }}
           FLIPKART_AFFILIATE_TOKEN: ${{ secrets.FLIPKART_AFFILIATE_TOKEN }}
           JSON_FEED_URLS: ${{ vars.JSON_FEED_URLS }}
-          DEAL_KEYWORDS: ${{ vars.DEAL_KEYWORDS || 'electronics,mobiles,laptops,appliances,fashion' }}
+          DEAL_KEYWORDS: ${{ vars.DEAL_KEYWORDS }}
           MIN_DISCOUNT_PERCENT: ${{ vars.MIN_DISCOUNT_PERCENT || '30' }}
+          FLASH_DEAL_MAX_PRICE: ${{ vars.FLASH_DEAL_MAX_PRICE || '10' }}
           MAX_DEALS_PER_RUN: ${{ vars.MAX_DEALS_PER_RUN || '10' }}
         shell: bash
         run: |

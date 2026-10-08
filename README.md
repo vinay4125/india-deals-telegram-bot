@@ -8,7 +8,7 @@ It runs every two hours on GitHub Actions, so no paid server is required.
 
 - Amazon India Creators API (the successor to the retired PA-API 5.0)
 - Flipkart Affiliate Product Feed API
-- Any permitted HTTPS JSON feed using the schema below
+- Any permitted HTTPS JSON feed from an approved affiliate network
 
 No connector scrapes shopping-site HTML. API access and product availability
 remain subject to each affiliate program's approval and terms. "All deals" is
@@ -58,7 +58,8 @@ For real posting, set `DRY_RUN=false` and provide the Telegram values in
 5. Open **Actions > Post India deals > Run workflow**.
 
 The workflow caches `.deals-state.json` to avoid reposting a deal for 14 days.
-Scheduled GitHub Actions can start later than the exact cron time.
+It checks every 30 minutes. Scheduled GitHub Actions can start later than the
+exact cron time.
 
 ## Affiliate API setup
 
@@ -87,13 +88,20 @@ An endpoint may return a JSON array or `{ "deals": [...] }`:
       "url": "https://store.example/product",
       "sale_price": 49990,
       "list_price": 69990,
-      "image_url": "https://store.example/image.jpg"
+      "image_url": "https://store.example/image.jpg",
+      "availability_note": "Available in selected Bengaluru pincodes"
     }
   ]
 }
 ```
 
 Only HTTPS product and feed URLs are accepted.
+
+`FLASH_DEAL_MAX_PRICE` defaults to `10`, causing genuine low-price offers such
+as ₹1 promotions to rank before normal deals. Quick-commerce feeds should set
+`availability_note`, because Blinkit, Instamart and Zepto prices and stock are
+commonly pincode-, account- and time-specific. The bot does not scrape those
+apps; use only a feed supplied or approved by the retailer or affiliate network.
 
 ## Run tests
 

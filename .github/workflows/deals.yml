@@ -60,7 +60,7 @@ jobs:
           india-deals-bot
 
       - name: Save notification state
-        if: success()
+        if: success() && hashFiles('.deals-state.json') != ''
         uses: actions/cache/save@v4
         with:
           path: .deals-state.json

@@ -110,6 +110,12 @@ h3 { font-size: 1.2rem; line-height: 1.25; }
   text-decoration: none;
 }
 
+.text-link {
+  display: inline-block;
+  margin-left: 18px;
+  font-weight: 750;
+}
+
 .checklist, article, .disclosure {
   border: 1px solid var(--line);
   border-radius: 14px;
@@ -148,6 +154,16 @@ article p, .split p, .article-page p, .article-page li { color: var(--muted); }
 .article-page h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); }
 .article-page h2 { margin-top: 44px; font-size: 1.7rem; }
 
+.deal-panel {
+  margin-block: 44px;
+  padding: 30px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+}
+
+.deal-panel h2 { margin-top: 0; }
+
 footer {
   display: flex;
   align-items: center;
@@ -163,6 +179,7 @@ footer {
   nav { gap: 14px; }
   .hero, .split, .cards { grid-template-columns: 1fr; }
   .hero { min-height: auto; gap: 40px; padding-block: 60px; }
+  .text-link { display: block; margin: 18px 0 0; }
   .section { padding-block: 60px; }
   footer { align-items: flex-start; flex-direction: column; }
 }

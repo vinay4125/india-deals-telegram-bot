@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 from india_deals_bot.app import select_deals
 from india_deals_bot.config import load_env_file
+from india_deals_bot.manual_deal import deal_from_env
 from india_deals_bot.models import Deal, decimal_value
 from india_deals_bot.sources import _first
 from india_deals_bot.state import DealState
@@ -169,6 +170,34 @@ class DealTests(unittest.TestCase):
         self.assertEqual(kwargs["data"]["photo"], deal.image_url)
         button = kwargs["data"]["reply_markup"]["inline_keyboard"][0][0]
         self.assertEqual(button["url"], deal.url)
+
+    def test_builds_valid_manual_deal(self) -> None:
+        values = {
+            "DEAL_MERCHANT": "Amazon India",
+            "DEAL_TITLE": "Example product",
+            "DEAL_SALE_PRICE": "999",
+            "DEAL_LIST_PRICE": "1999",
+            "DEAL_URL": "https://example.com/product",
+            "DEAL_IMAGE_URL": "https://example.com/image.jpg",
+            "DEAL_AVAILABILITY_NOTE": "Selected cards only",
+        }
+        with patch.dict(os.environ, values, clear=False):
+            deal = deal_from_env()
+        self.assertEqual(deal.sale_price, Decimal("999"))
+        self.assertEqual(deal.discount_percent, Decimal("50.0"))
+        self.assertEqual(deal.availability_note, "Selected cards only")
+
+    def test_rejects_invalid_manual_prices(self) -> None:
+        values = {
+            "DEAL_MERCHANT": "Store",
+            "DEAL_TITLE": "Invalid product",
+            "DEAL_SALE_PRICE": "200",
+            "DEAL_LIST_PRICE": "100",
+            "DEAL_URL": "https://example.com/product",
+        }
+        with patch.dict(os.environ, values, clear=False):
+            with self.assertRaisesRegex(ValueError, "cannot exceed"):
+                deal_from_env()
 
 
 if __name__ == "__main__":

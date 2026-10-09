@@ -108,3 +108,17 @@ apps; use only a feed supplied or approved by the retailer or affiliate network.
 ```powershell
 python -m unittest discover -s tests -v
 ```
+
+## Post a verified deal before API approval
+
+Repository owners can publish rich deal cards without a server:
+
+1. Open the repository's **Actions** tab.
+2. Select **Post a manual deal**.
+3. Select **Run workflow**.
+4. Enter the retailer, product title, current price, MRP and official link.
+5. Optionally provide a public HTTPS image and availability conditions.
+
+The workflow validates prices and URLs, calculates the discount, and posts an
+image card with an inline **View Deal** button. Only the repository owner can
+run this workflow. Verify the live price and conditions before every post.

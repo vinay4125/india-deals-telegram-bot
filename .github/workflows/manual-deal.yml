@@ -1,0 +1,69 @@
+name: Post a manual deal
+
+on:
+  workflow_dispatch:
+    inputs:
+      merchant:
+        description: "Retailer, for example Amazon India"
+        required: true
+        type: string
+      title:
+        description: "Product title"
+        required: true
+        type: string
+      sale_price:
+        description: "Current price in rupees, numbers only"
+        required: true
+        type: string
+      list_price:
+        description: "MRP/list price in rupees, numbers only"
+        required: true
+        type: string
+      deal_url:
+        description: "Official HTTPS product or approved website URL"
+        required: true
+        type: string
+      image_url:
+        description: "Optional public HTTPS product-image URL"
+        required: false
+        type: string
+      availability_note:
+        description: "Optional pincode, coupon, card or stock note"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: manual-deal-publisher
+  cancel-in-progress: false
+
+jobs:
+  post:
+    if: github.actor == github.repository_owner
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install bot
+        run: python -m pip install .
+
+      - name: Validate and post deal
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DEAL_MERCHANT: ${{ inputs.merchant }}
+          DEAL_TITLE: ${{ inputs.title }}
+          DEAL_SALE_PRICE: ${{ inputs.sale_price }}
+          DEAL_LIST_PRICE: ${{ inputs.list_price }}
+          DEAL_URL: ${{ inputs.deal_url }}
+          DEAL_IMAGE_URL: ${{ inputs.image_url }}
+          DEAL_AVAILABILITY_NOTE: ${{ inputs.availability_note }}
+        run: python -m india_deals_bot.manual_deal
